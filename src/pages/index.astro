@@ -63,10 +63,35 @@ const translationProcessContent = `
         <div class="row justify-content-center text-center">
           <div class="col-lg-8">
             <h1 class="display-5 mb-4">Subtitle Translator AI – Free Online Subtitle Translator App</h1>
-            <p class="lead mb-5">
+            <p class="lead mb-2">
               Instantly translate subtitles online for free with our AI-powered subtitle translator. Upload SRT, VTT, SUB, SBV, LRC, SMI, SSA, ASS, or JSON files and translate subtitles for YouTube, movies, and more. Try our subtitle translator app for fast, accurate, and editable subtitle translations.
             </p>
+
+            <a href="#how-to-use-video" class="btn btn-primary btn-md mt-3 mb-4">
+              <i class="bi bi-play-circle me-2"></i> Watch Video Tutorial
+            </a>
+
             <FileUpload />
+            <div class="video-tutorial-container mt-5 pt-4" id="how-to-use-video">
+              <h2 class="h3 fw-bold mb-3">Quick Start Guide: See How It Works</h2>
+              <p class="text-muted mb-4 col-lg-10 mx-auto">
+                Watch this short video to learn how to easily translate your subtitle files in just a few steps.
+              </p>
+              
+              <div class="ratio ratio-16x9 shadow-lg mb-4 overflow-hidden">
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/HMTNLlxbYrU?modestbranding=1&autohide=1&showinfo=0"
+                  title="How to Use the Subtitle Translator AI"
+                  frameborder="0"
+                  allowfullscreen
+                  loading="lazy"
+                ></iframe>
+              </div>
+              
+              <a href="#how-it-works" class="btn btn-primary btn-sm mt-3">
+                <i class="bi bi-book me-2"></i> Read Step-by-Step Instructions
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -127,12 +152,24 @@ const translationProcessContent = `
     color: var(--bs-secondary-text);
   }
 
+  .ratio iframe {
+    border: none;
+    border-radius: var(--bs-border-radius-lg); 
+  }
+
   @media (max-width: 768px) {
     .hero h1 {
       font-size: 1.8rem;
     }
     .lead {
       font-size: 0.86rem;
+    }
+    .video-tutorial-container .h3 {
+      font-size: 1.5rem; /* Adjust heading size for smaller screens */
+    }
+    .video-tutorial-container .btn {
+      font-size: 0.9rem; /* Adjust button size for smaller screens */
+      padding: 0.75rem 1.25rem;
     }
   }
 </style>
