@@ -33,32 +33,32 @@ const {
 } = Astro.props;
 ---
 
-<!-- Primary Meta Tags -->
+{/* Primary Meta Tags */}
 <title>{title}</title>
 <meta name="title" content={title}>
 <meta name="description" content={description}>
 <meta name="keywords" content={keywords.join(", ")}>
 
-<!-- Open Graph / Facebook -->
+{/* Open Graph / Facebook */}
 <meta property="og:type" content="website">
 <meta property="og:url" content={canonicalUrl}>
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>
-<meta property="og:image" content={`${ROOT_URL}/og-image.jpg`}>
+<meta property="og:image" content={`${ROOT_URL}/subtitletranslatorai.jpg`}>
 
-<!-- Twitter -->
+{/* Twitter */}
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content={canonicalUrl}>
 <meta property="twitter:title" content={title}>
 <meta property="twitter:description" content={description}>
-<meta property="twitter:image" content={`${ROOT_URL}/og-image.jpg`}>
+<meta property="twitter:image" content={`${ROOT_URL}/subtitletranslatorai.jpg`}>
 
-<!-- Additional SEO -->
+{/* Additional SEO */}
 <link rel="canonical" href={canonicalUrl}>
 <meta name="robots" content="index, follow">
 <meta name="language" content="English">
 
-<!-- Structured Data -->
+{/* Structured Data */}
 <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebApplication",

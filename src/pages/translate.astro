@@ -98,20 +98,20 @@ if (subtitleData.length === 0) {
   return Astro.redirect('/');
 }
 
-const pageTitle = "Translate Subtitles";
+const pageTitle = "Subtitle Translator";
 const pageDescription = `Translate "${filename}" - Free online subtitle translator`;
 ---
 
 <Layout title={pageTitle} noindex={true}>
-  <!-- Add Google Translate styles to head -->
+  {/* Add Google Translate styles to head */}
   <style set:html={googleTranslateStyles} slot="head" />
 
-  <!-- Add Google Translate scripts to head -->
+  {/* Add Google Translate scripts to head */}
   <script is:inline slot="head">
     function googleTranslateElementInit() {
       const translateElement = new google.translate.TranslateElement({
         pageLanguage: 'auto',
-        includedLanguages: 'en,es,fr,de,it,pt,ru,ja,ko,zh-CN',
+        // includedLanguages: 'en,es,fr,de,it,pt,ru,ja,ko,zh-CN',
         layout: google.translate.TranslateElement.InlineLayout.SELECT,
         autoDisplay: false,
         gaTrack: false
@@ -137,7 +137,7 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
     src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
   </script>
 
-  <!-- Hidden container for translation -->
+  {/* Hidden container for translation */}
   <div id="text-to-translate">
     {subtitleData.map(subtitle => (
       <p class="translate-p"
@@ -168,12 +168,12 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
       </div>
     </div>
 
-    <!-- Replace TranslationControls with Google Translate -->
+    {/* Replace TranslationControls with Google Translate */}
     <section class="card shadow-sm mb-4">
       <div class="card-body p-4 notranslate">
         <h5 class="card-title">Translation Settings</h5>
         
-        <!-- Google Translate Element -->
+        {/* Google Translate Element */}
         <div>
           <label for="google_translate_element" class="form-label fw-medium">Select Language:</label>
           <div id="google_translate_element"></div>
@@ -183,7 +183,7 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
           <button class="btn btn-primary btn-lg" id="apply-translation-btn">
             <span class="d-flex align-items-center justify-content-center">
               <i class="bi bi-check-circle me-1"></i>
-              <span class="button-text">Apply Translation</span>
+              <span class="button-text">Translate</span>
               <span class="spinner-border spinner-border-sm ms-2 d-none" role="status">
                 <span class="visually-hidden">Loading...</span>
               </span>
@@ -325,7 +325,7 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
         // Reset button state
         applyTranslationBtn.disabled = false;
         spinner?.classList.add('d-none');
-        if (buttonText) buttonText.textContent = 'Apply Translation';
+        if (buttonText) buttonText.textContent = 'Translate';
       }
     });
   }

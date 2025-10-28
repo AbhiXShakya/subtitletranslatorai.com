@@ -14,9 +14,9 @@ const { subtitles, filename = 'subtitles.srt' } = Astro.props;
   <div class="card-header bg-body-tertiary p-3">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
       <h5 class="mb-0" id="subtitle-table-title">Edit Subtitles</h5>
-      <!-- Action Buttons -->
+      {/* Action Buttons */}
       <div class="d-flex flex-wrap gap-2">
-        <!-- Format selector dropdown -->
+        {/* Format selector dropdown */}
         <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="format-selector" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-file-earmark-text me-1"></i>
@@ -34,7 +34,7 @@ const { subtitles, filename = 'subtitles.srt' } = Astro.props;
             <li><button class="dropdown-item" data-format="json">JSON (.json)</button></li>
           </ul>
         </div>
-        <!-- Download button -->
+        {/* Download button */}
         <button class="btn btn-success" type="button" id="download-btn">
           <i class="bi bi-download me-1"></i>
           <span id="download-btn-text">Download</span>
@@ -354,7 +354,7 @@ const resetDownloadButton = (): void => {
     // if sub-trans-1 is empty, show error
     const firstTextarea = document.getElementById('sub-trans-1') as HTMLTextAreaElement;
     if (firstTextarea && firstTextarea.value.trim() === '') {
-      showError('Please apply translation before downloading.');
+      showError('Please click on Translate before downloading.');
       resetDownloadButton();
       return;
     }
