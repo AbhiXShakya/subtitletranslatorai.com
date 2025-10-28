@@ -169,26 +169,36 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
     </div>
 
     {/* Replace TranslationControls with Google Translate */}
+    {/* Replace TranslationControls with Google Translate */}
     <section class="card shadow-sm mb-4">
-      <div class="card-body p-4 notranslate">
+      <div class="card-body p-4 notranslate" style="padding-bottom: 0px !important;">
         <h5 class="card-title">Translation Settings</h5>
         
-        {/* Google Translate Element */}
-        <div>
-          <label for="google_translate_element" class="form-label fw-medium">Select Language:</label>
-          <div id="google_translate_element"></div>
-        </div>
+        {/* Use Bootstrap row for layout 
+            ADD/CONFIRM align-items-end HERE */}
+        <div class="row g-3 align-items-end" style="max-width: 500px;">
+          
+          {/* Column 1: Language Selector (takes remaining space on desktop) */}
+          <div class="col-12 col-md">
+            <label for="google_translate_element" class="form-label fw-medium">Select Language:</label>
+            <div id="google_translate_element"></div>
+          </div>
 
-        <div class="d-grid">
-          <button class="btn btn-primary btn-lg" id="apply-translation-btn">
-            <span class="d-flex align-items-center justify-content-center">
-              <i class="bi bi-check-circle me-1"></i>
-              <span class="button-text">Translate</span>
-              <span class="spinner-border spinner-border-sm ms-2 d-none" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </span>
-            </span>
-          </button>
+          {/* Column 2: Button (takes auto width on desktop) */}
+          <div class="col-12 col-md-auto" style="margin-bottom: 21.6px;">
+            <div class="d-grid d-md-block">
+              <button class="btn btn-primary btn-lg" id="apply-translation-btn">
+                <span class="d-flex align-items-center justify-content-center">
+                  <i class="bi bi-translate me-1"></i>
+                  <span class="button-text">Translate</span>
+                  <span class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
       <div class="mt-3 p-4 pt-0">
