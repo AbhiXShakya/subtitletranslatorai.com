@@ -1,0 +1,363 @@
+---
+import type { SubtitleCaption } from '../utils/subtitle';
+import { formatTime } from '../utils/subtitle';
+
+interface Props {
+  subtitles: SubtitleCaption[];
+  filename?: string;
+}
+
+const { subtitles, filename = 'subtitles.srt' } = Astro.props;
+---
+
+<section id="translate-table" class="card shadow-sm notranslate" data-original-filename={filename}>
+  <div class="card-header bg-body-tertiary p-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <h5 class="mb-0" id="subtitle-table-title">Edit Subtitles</h5>
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap gap-2">
+        <!-- Format selector dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="format-selector" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-file-earmark-text me-1"></i>
+            Select Format
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="format-dropdown">
+            <li><button class="dropdown-item" data-format="srt">SubRip (.srt)</button></li>
+            <li><button class="dropdown-item" data-format="vtt">WebVTT (.vtt)</button></li>
+            <li><button class="dropdown-item" data-format="sub">MicroDVD (.sub)</button></li>
+            <li><button class="dropdown-item" data-format="sbv">YouTube (.sbv)</button></li>
+            <li><button class="dropdown-item" data-format="lrc">Lyrics (.lrc)</button></li>
+            <li><button class="dropdown-item" data-format="smi">SAMI (.smi)</button></li>
+            <li><button class="dropdown-item" data-format="ssa">SubStation Alpha (.ssa)</button></li>
+            <li><button class="dropdown-item" data-format="ass">Advanced SubStation Alpha (.ass)</button></li>
+            <li><button class="dropdown-item" data-format="json">JSON (.json)</button></li>
+          </ul>
+        </div>
+        <!-- Download button -->
+        <button class="btn btn-success" type="button" id="download-btn">
+          <i class="bi bi-download me-1"></i>
+          <span id="download-btn-text">Download</span>
+        </button>
+        <a href="/" class="btn btn-outline-danger">
+          <i class="bi bi-plus-circle me-1"></i>
+          Start New
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-3">
+    <div class="table-responsive-stack">
+      <table class="table table-bordered table-hover align-middle w-100">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 5%;">ID</th>
+            <th scope="col" style="width: 15%;">Start Time</th>
+            <th scope="col" style="width: 15%;">End Time</th>
+            <th scope="col" style="width: 32.5%;">Original Text</th>
+            <th scope="col" style="width: 32.5%;">Translated Text</th>
+          </tr>
+        </thead>
+        <tbody id="subtitle-table-body">
+          {subtitles.map(subtitle => (
+            <tr data-index={subtitle.index}>
+              <td data-label="ID">
+                <input 
+                  type="text" 
+                  class="form-control-plaintext form-control-sm text-center" 
+                  value={subtitle.index} 
+                  readonly 
+                  id={`sub-id-${subtitle.index}`}
+                />
+              </td>
+              <td data-label="Start">
+                <input 
+                  type="text" 
+                  class="form-control-plaintext form-control-sm" 
+                  value={formatTime(subtitle.start)} 
+                  readonly 
+                  id={`sub-start-${subtitle.index}`}
+                />
+              </td>
+              <td data-label="End">
+                <input 
+                  type="text" 
+                  class="form-control-plaintext form-control-sm" 
+                  value={formatTime(subtitle.end)} 
+                  readonly 
+                  id={`sub-end-${subtitle.index}`}
+                />
+              </td>
+              <td data-label="Original">
+                <p class="form-control-plaintext form-control-sm mb-0">
+                  {subtitle.content}
+                </p>
+              </td>
+              <td data-label="Translated">
+                <textarea 
+                  class="form-control form-control-sm editable-cell" 
+                  rows="3"
+                  aria-label={`Editable translated text for line ${subtitle.index}`}
+                  id={`sub-trans-${subtitle.index}`}
+                  data-original-text={subtitle.text}
+                ></textarea>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Constants
+  const FILE_SIZE_THRESHOLD = 50 * 1024 * 1024; // 50MB threshold
+  let worker: Worker | null = null;
+
+  function parseTime(timeString: string): number {
+    const parts = timeString.split(/[:,]/).map(Number);
+    if (parts.length === 4) {
+      const [hours, minutes, seconds, milliseconds] = parts;
+      return (hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds;
+    }
+    return 0;
+  }
+
+  // Define supported formats
+  const SUPPORTED_FORMATS = {
+    srt: 'srt',
+    vtt: 'vtt',
+    sub: 'sub',
+    sbv: 'sbv',
+    lrc: 'lrc',
+    smi: 'smi',
+    ssa: 'ssa',
+    ass: 'ass',
+    json: 'json'
+  } as const;
+
+  // Get original file format
+  const getFileFormat = (filename: string): string => {
+    const ext = filename.split('.').pop()?.toLowerCase() || 'srt';
+    return Object.keys(SUPPORTED_FORMATS).find(format =>
+      SUPPORTED_FORMATS[format as keyof typeof SUPPORTED_FORMATS] === ext
+    ) || 'srt';
+  };
+
+  // Setup format dropdown
+  const formatDropdown = document.getElementById('format-dropdown');
+  const downloadBtn = document.getElementById('download-btn');
+  const downloadBtnText = document.getElementById('download-btn-text');
+  const formatSelector = document.getElementById('format-selector');
+  const originalFormat = getFileFormat(document.querySelector('#translate-table')?.getAttribute('data-original-filename') || 'subtitles.srt');
+  let selectedFormat = originalFormat;
+
+  const formatLabels = {
+    srt: 'SubRip (.srt)',
+    vtt: 'WebVTT (.vtt)',
+    sub: 'MicroDVD (.sub)',
+    sbv: 'YouTube (.sbv)',
+    lrc: 'Lyrics (.lrc)',
+    smi: 'SAMI (.smi)',
+    ssa: 'SubStation Alpha (.ssa)',
+    ass: 'Advanced SubStation Alpha (.ass)',
+    json: 'JSON (.json)'
+  };
+
+  // Update format selector text
+  if (formatSelector && formatLabels[originalFormat as keyof typeof formatLabels]) {
+    formatSelector.innerHTML = `
+      <i class="bi bi-file-earmark-text me-1"></i>
+      ${formatLabels[originalFormat as keyof typeof formatLabels]}
+    `;
+  }
+
+  // Set initial download button text
+  if (downloadBtnText) {
+    downloadBtnText.textContent = 'Download';
+  }
+// Helper functions
+
+  const showError = (message: string): void => {
+    if (showToast) {
+      showToast(message || 'An error occurred during download', 'error');
+    }
+  };
+const resetDownloadButton = (): void => {
+  if (downloadBtn) {
+    downloadBtn.disabled = false;
+  }
+};
+
+
+  // Web Worker management
+  const initWorker = (): void => {
+    if (!worker) {
+      worker = new Worker('/src/scripts/subtitle-worker.ts', { type: 'module' });
+      
+      worker.onmessage = (e) => {
+        const { type, error, processed } = e.data;
+        
+        if (type === 'process' && processed) {
+          processed.forEach(sub => {
+            const textarea = document.getElementById(`sub-trans-${sub.index}`);
+            if (textarea instanceof HTMLTextAreaElement) {
+              textarea.value = sub.content;
+            }
+          });
+        } else if (type === 'error') {
+          showError(error);
+          resetWorker();
+        } else if (type === 'complete') {
+          handleDownloadComplete(e.data);
+        }
+      };
+
+      worker.onerror = (error) => {
+        showError(error.message);
+        resetWorker();
+      };
+    }
+  };
+
+  const resetWorker = (): void => {
+    if (worker) {
+      worker.terminate();
+      worker = null;
+    }
+  };
+
+  // Handle download completion
+  const handleDownloadComplete = async (data: any): Promise<void> => {
+    try {
+      const { subtitles, format } = data;
+      const filename = document.querySelector('.card')?.getAttribute('data-original-filename') || 'subtitles.srt';
+      
+      const response = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subtitles, format, filename })
+      });
+
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename.replace(/\.[^/.]+$/, '')}-subtitletranslatorai.com.${format}`;
+      
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (showToast) {
+        showToast('Download completed successfully!', 'success');
+      }
+    } catch (error) {
+      showError(error instanceof Error ? error.message : 'Download failed');
+    } finally {
+      resetDownloadButton();
+      resetWorker();
+    }
+  };
+
+  // Handle format selection
+  const handleFormatSelection = (event: Event): void => {
+    if (!(event.target instanceof HTMLElement)) return;
+    
+    const format = event.target.getAttribute('data-format');
+    if (!format) return;
+
+    // Update selected format
+    selectedFormat = format;
+    const formatLabel = formatLabels[format as keyof typeof formatLabels];
+    
+    // Update format selector button text
+    if (formatSelector && formatLabel) {
+      formatSelector.innerHTML = `
+        <i class="bi bi-file-earmark-text me-1"></i>
+        ${formatLabel}
+      `;
+    }
+
+    // Update active state in dropdown
+    const allFormatItems = formatDropdown?.querySelectorAll('.dropdown-item');
+    allFormatItems?.forEach(item => item.classList.remove('active'));
+    event.target.classList.add('active');
+  };
+
+  // Handle main download button click
+  const handleDownloadClick = async (format: string): Promise<void> => {
+    if (!downloadBtn) return;
+    
+    try {
+      downloadBtn.disabled = true;
+      
+      // Validate format
+      if (!Object.keys(SUPPORTED_FORMATS).includes(format)) {
+        throw new Error('Invalid format selected');
+      }
+
+      const subtitles = Array.from(document.querySelectorAll('tr[data-index]')).map(row => {
+        const index = parseInt(row.getAttribute('data-index') || '0');
+        const startTimeString = (document.getElementById(`sub-start-${index}`) as HTMLInputElement)?.value;
+        const endTimeString = (document.getElementById(`sub-end-${index}`) as HTMLInputElement)?.value;
+        return {
+          index,
+          start: startTimeString ? parseTime(startTimeString) : 0,
+          end: endTimeString ? parseTime(endTimeString) : 0,
+          content: (document.getElementById(`sub-trans-${index}`) as HTMLTextAreaElement)?.value
+        };
+      });
+
+      const size = new Blob([JSON.stringify(subtitles)]).size;
+
+      if (size > FILE_SIZE_THRESHOLD) {
+        initWorker();
+        worker?.postMessage({
+          type: 'process',
+          subtitles,
+          format,
+          filename: document.querySelector('.card')?.getAttribute('data-original-filename') || 'subtitles.srt'
+        });
+      } else {
+        await handleDownloadComplete({ subtitles, format });
+      }
+    } catch (error) {
+      showError(error instanceof Error ? error.message : 'Download failed');
+      resetDownloadButton();
+    }
+  };
+
+  // Initialize format dropdown
+  const originalFormatItem = formatDropdown?.querySelector(`[data-format="${originalFormat}"]`);
+  if (originalFormatItem instanceof HTMLElement) {
+    originalFormatItem.classList.add('active');
+    const parentUl = originalFormatItem.closest('ul');
+    if (parentUl && originalFormatItem.parentElement) {
+      parentUl.insertBefore(originalFormatItem.parentElement, parentUl.firstChild);
+    }
+  }
+
+  // Add event listeners
+  formatDropdown?.addEventListener('click', handleFormatSelection);
+  downloadBtn?.addEventListener('click', () => {
+    if (!selectedFormat) {
+      showError('Please select a format first');
+      return;
+    }
+    // if sub-trans-1 is empty, show error
+    const firstTextarea = document.getElementById('sub-trans-1') as HTMLTextAreaElement;
+    if (firstTextarea && firstTextarea.value.trim() === '') {
+      showError('Please apply translation before downloading.');
+      resetDownloadButton();
+      return;
+    }
+    handleDownloadClick(selectedFormat);
+  });
+</script>

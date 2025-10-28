@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContentSection from '../components/ContentSection.astro';
+import SEOMetaTags from '../components/SEOMetaTags.astro';
+
+const title = "Terms of Service - Subtitle Translator";
+const description = "Terms and conditions for using our subtitle translation service. Read about usage terms, limitations, and user responsibilities.";
+const keywords = [
+  "subtitle translator terms",
+  "terms of service",
+  "usage terms",
+  "subtitle translation terms",
+  "service conditions"
+];
+---
+
+<Layout title={title}>
+  <SEOMetaTags
+    title={title}
+    description={description}
+    keywords={keywords}
+  />
+
+  <Header />
+  
+  <main>
+    <ContentSection
+      title="Terms of Service"
+      content={`
+        <p>Last updated: October 28, 2025</p>
+
+        <p>Please read these Terms of Service carefully before using the Subtitle Translator service.</p>
+
+        <h3>1. Acceptance of Terms</h3>
+        <p>By accessing or using our service, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the service.</p>
+
+        <h3>2. Service Description</h3>
+        <p>Subtitle Translator provides online subtitle translation services for various subtitle file formats. The service is provided "as is" and "as available" basis.</p>
+
+        <h3>3. User Responsibilities</h3>
+        <ul>
+          <li>You must ensure you have the right to translate the content you submit</li>
+          <li>You are responsible for the accuracy of the content you provide</li>
+          <li>You agree not to misuse or abuse the service</li>
+          <li>You must not use the service for any illegal purposes</li>
+        </ul>
+
+        <h3>4. Service Limitations</h3>
+        <p>We reserve the right to:</p>
+        <ul>
+          <li>Modify or terminate the service for any reason</li>
+          <li>Restrict access to the service</li>
+          <li>Limit file sizes and processing times</li>
+          <li>Change these terms at any time</li>
+        </ul>
+
+        <h3>5. Intellectual Property</h3>
+        <p>The service, its original content, features, and functionality are owned by Subtitle Translator and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+
+        <h3>6. Disclaimer of Warranties</h3>
+        <p>The service is provided "as is" without any warranty of any kind. We do not guarantee the accuracy, completeness, or quality of translations.</p>
+
+        <h3>7. Limitation of Liability</h3>
+        <p>Subtitle Translator shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.</p>
+
+        <h3>8. User Content</h3>
+        <p>You retain all rights to your content. By using our service, you grant us the right to process and translate your content as part of our service provision.</p>
+
+        <h3>9. Privacy Policy</h3>
+        <p>Your use of the service is also governed by our Privacy Policy. Please review our <a href="/privacy">Privacy Policy</a> for more information.</p>
+
+        <h3>10. Contact Us</h3>
+        <p>If you have any questions about these Terms, please <a href="/contact">contact us</a>.</p>
+      `}
+      isLargeSection={true}
+    />
+  </main>
+
+  <Footer />
+</Layout>

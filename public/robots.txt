@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /translate
+
+Sitemap: https://subtitletranslatorai.com/sitemap.xml

@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContentSection from '../components/ContentSection.astro';
+import SEOMetaTags from '../components/SEOMetaTags.astro';
+
+const title = "About - Subtitle Translator";
+const description = "Learn about our free online subtitle translation tool. We make it easy to translate subtitle files to any language with high accuracy and quick results.";
+const keywords = [
+  "about subtitle translator",
+  "subtitle translation service",
+  "online subtitle tool",
+  "subtitle converter about",
+  "translate subtitles online"
+];
+---
+
+<Layout title={title}>
+  <SEOMetaTags
+    title={title}
+    description={description}
+    keywords={keywords}
+  />
+
+  <Header />
+  
+  <main>
+    <ContentSection
+      title="About Subtitle Translator"
+      content={`
+        <p>Welcome to Subtitle Translator, your go-to solution for quick and accurate subtitle translations. Our platform is designed to make subtitle translation accessible to everyone, whether you're a content creator, filmmaker, or language enthusiast.</p>
+
+        <h3>What We Offer</h3>
+        <ul>
+          <li><strong>Multiple Format Support:</strong> Translate SRT, SUB, SBV, ASS, VTT, and STL subtitle files</li>
+          <li><strong>Fast Processing:</strong> Get your translations done quickly and efficiently</li>
+          <li><strong>Free Service:</strong> All features available at no cost</li>
+          <li><strong>High Accuracy:</strong> Powered by advanced translation technology</li>
+          <li><strong>Easy to Use:</strong> Simple interface with no technical expertise required</li>
+        </ul>
+
+        <h3>Our Mission</h3>
+        <p>We believe in breaking down language barriers in digital content. Our mission is to provide a reliable, accessible tool that helps people share their content with audiences worldwide.</p>
+
+        <h3>How It Works</h3>
+        <p>Simply upload your subtitle file, select your target language, and let our system handle the translation. You can review and edit the translations before downloading the final file in your preferred format.</p>
+      `}
+      isLargeSection={true}
+    />
+  </main>
+
+  <Footer />
+</Layout>

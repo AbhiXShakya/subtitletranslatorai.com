@@ -1,0 +1,138 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import SEOMetaTags from '../components/SEOMetaTags.astro';
+import FileUpload from '../components/FileUpload.astro';
+import ContentSection from '../components/ContentSection.astro';
+import Footer from '../components/Footer.astro';
+
+const pageTitle = "Subtitle Translator - Free Online Subtitle Translation Tool";
+const pageDescription = "Free online subtitle translator. Translate SRT, SUB, SBV, ASS, VTT, STL subtitle files to any language. Easy to use, instant translation with editing capabilities.";
+
+const aboutContent = `
+<p>On our website you can translate subtitles for movies, series, documentaries and other types. You can translate subtitles through our subtitles translators from one language to another in the following subtitle formats: SRT, VTT, SUB, SBV, LRC, SMI, SSA, ASS, JSON.</p>
+
+<p>After uploading your subtitle via subtitles translator on this page your subtitle will be displayed on the next page in the table, where you will select your desired language for subtitle translation and after the subtitle translation is done you can edit your subtitle in the specified table and after that download it.</p>
+
+<p>Please check the next section to see instructions how to translate subtitles with subtitle translator.</p>
+`;
+
+const howItWorksContent = `
+<p>If you do not have the desired subtitle in your language, you can find the subtitle in any language (example: opensubtitles.org) and with the help of our subtitles translator you can translate the subtitle into your desired language.</p>
+
+<h3>Simple Steps to Translate Your Subtitles:</h3>
+<ul>
+  <li><strong>Upload</strong> - Drag & drop or select your subtitle file</li>
+  <li><strong>Choose Language</strong> - Select your target translation language</li>
+  <li><strong>Edit</strong> - Review and edit the translated subtitles</li>
+  <li><strong>Download</strong> - Save your translated subtitle file</li>
+</ul>
+`;
+
+const translationProcessContent = `
+<p>The subtitle translating process is automated and may not always be perfect. We recommend reviewing and editing your translated subtitles for accuracy and quality before downloading.</p>
+
+<h3>Supported File Formats:</h3>
+<ul>
+  <li><strong>SRT</strong> - SubRip (.srt)</li>
+  <li><strong>VTT</strong> - WebVTT (.vtt)</li>
+  <li><strong>SUB</strong> - MicroDVD (.sub)</li>
+  <li><strong>SBV</strong> - YouTube (.sbv)</li>
+  <li><strong>LRC</strong> - Lyrics (.lrc)</li>
+  <li><strong>SMI</strong> - SAMI (.smi)</li>
+  <li><strong>SSA</strong> - SubStation Alpha (.ssa)</li>
+  <li><strong>ASS</strong> - Advanced SubStation Alpha (.ass)</li>
+  <li><strong>JSON</strong> - JSON (.json)</li>
+</ul>
+`;
+---
+
+<Layout title={pageTitle}>
+  <SEOMetaTags
+    title={pageTitle}
+    description={pageDescription}
+  />
+  
+  <div class="notranslate">
+    <Header title="Subtitle Translator" />
+    
+    <main>
+    <!-- Hero Section -->
+    <section class="hero py-5 bg-body-tertiary">
+      <div class="container">
+        <div class="row justify-content-center text-center">
+          <div class="col-lg-8">
+            <h1 class="display-5 mb-4">Subtitle Translator AI – Free Online Subtitle Translator App</h1>
+            <p class="lead mb-5">
+              Instantly translate subtitles online for free with our AI-powered subtitle translator. Upload SRT, VTT, SUB, SBV, LRC, SMI, SSA, ASS, or JSON files and translate subtitles for YouTube, movies, and more. Try our subtitle translator app for fast, accurate, and editable subtitle translations.
+            </p>
+            <FileUpload />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Sections -->
+    <ContentSection
+      title="About Subtitle Translator AI"
+      content={`<p>SubtitleTranslatorAI.com is your one-stop solution for translating subtitles online. Our free subtitle translator app supports SRT, VTT, SUB, SBV, LRC, SMI, SSA, ASS, and JSON formats. Whether you need to translate subtitles for YouTube videos, movies, or presentations, our subtitle translator online tool makes it easy and fast. Powered by advanced AI, you can translate, edit, and download subtitles in any language.</p>`}
+      id="about"
+      isLargeSection={true}
+    />
+
+    <ContentSection
+      title="How to Use the Subtitle Translator Online"
+      content={`<ul>
+        <li><strong>Upload</strong> your subtitle file (SRT, VTT, SUB, SBV, etc.)</li>
+        <li><strong>Select</strong> your target language for translation</li>
+        <li><strong>Translate</strong> instantly with our subtitle translator AI</li>
+        <li><strong>Edit</strong> your translated subtitles for accuracy</li>
+        <li><strong>Download</strong> your new subtitle file for free</li>
+      </ul>
+      <p>Our subtitle translator app is designed for creators, educators, and anyone needing fast, reliable subtitle translation online.</p>`}
+      id="how-it-works"
+    />
+
+    <ContentSection
+      title="Subtitle Translator AI – Supported Formats & Tips"
+      content={`<p>SubtitleTranslatorAI.com supports a wide range of subtitle formats including SRT, VTT, SUB, SBV, LRC, SMI, SSA, ASS, and JSON. Our subtitle translator AI ensures high-quality translations, but always review and edit your subtitles for the best results. Perfect for YouTube creators, film editors, and anyone needing a subtitle translator free of charge.</p>`}
+      id="process"
+      isLargeSection={true}
+    />
+  </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .hero {
+    background: linear-gradient(
+      rgba(var(--bs-primary-rgb), 0.05),
+      rgba(var(--bs-primary-rgb), 0.01)
+    );
+  }
+
+  .hero h1 {
+    font-weight: 700;
+    font-size: 2.6rem;
+    color: var(--bs-emphasis-color);
+  }
+
+  .lead {
+    font-size: 1.1rem;
+  }
+
+  .hero .lead {
+    color: var(--bs-secondary-text);
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 1.8rem;
+    }
+    .lead {
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+interface Language {
+  code: string;
+  name: string;
+}
+
+interface Props {
+  languages?: Language[];
+}
+
+const defaultLanguages: Language[] = [
+  { code: 'af', name: 'Afrikaans' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'bn', name: 'Bengali' },
+  { code: 'bg', name: 'Bulgarian' },
+  { code: 'ca', name: 'Catalan' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'hr', name: 'Croatian' },
+  { code: 'cs', name: 'Czech' },
+  { code: 'da', name: 'Danish' },
+  { code: 'nl', name: 'Dutch' },
+  { code: 'en', name: 'English' },
+  { code: 'et', name: 'Estonian' },
+  { code: 'tl', name: 'Filipino' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'el', name: 'Greek' },
+  { code: 'gu', name: 'Gujarati' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'hu', name: 'Hungarian' },
+  { code: 'is', name: 'Icelandic' },
+  { code: 'id', name: 'Indonesian' },
+  { code: 'ga', name: 'Irish' },
+  { code: 'it', name: 'Italian' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'kn', name: 'Kannada' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'lv', name: 'Latvian' },
+  { code: 'lt', name: 'Lithuanian' },
+  { code: 'ms', name: 'Malay' },
+  { code: 'ml', name: 'Malayalam' },
+  { code: 'mr', name: 'Marathi' },
+  { code: 'ne', name: 'Nepali' },
+  { code: 'no', name: 'Norwegian' },
+  { code: 'fa', name: 'Persian' },
+  { code: 'pl', name: 'Polish' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'ro', name: 'Romanian' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'sr', name: 'Serbian' },
+  { code: 'si', name: 'Sinhala' },
+  { code: 'sk', name: 'Slovak' },
+  { code: 'sl', name: 'Slovenian' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'sw', name: 'Swahili' },
+  { code: 'sv', name: 'Swedish' },
+  { code: 'ta', name: 'Tamil' },
+  { code: 'te', name: 'Telugu' },
+  { code: 'th', name: 'Thai' },
+  { code: 'tr', name: 'Turkish' },
+  { code: 'uk', name: 'Ukrainian' },
+  { code: 'ur', name: 'Urdu' },
+  { code: 'vi', name: 'Vietnamese' }
+];
+
+const { languages = defaultLanguages } = Astro.props;
+---
+<section class="card shadow-sm mb-4">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-3">Translation Settings</h5>
+    <div class="row g-3">
+      <div class="col-md-8">
+        <div class="mb-md-0">
+          <label for="language-select" class="form-label fw-medium">Translate to:</label>
+          <select class="form-select form-select-lg" id="language-select">
+            <option value="" selected>Choose target language...</option>
+            {languages.map(lang => (
+              <option value={lang.code}>{lang.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary btn-lg w-100" id="translate-btn" disabled>
+          <span class="d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-translate"></i>
+            <span>Translate</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const translateBtn = document.getElementById('translate-btn');
+  const languageSelect = document.getElementById('language-select') as HTMLSelectElement;
+  
+  // Enable/disable translate button based on language selection
+  languageSelect?.addEventListener('change', () => {
+    if (translateBtn) {
+      translateBtn.disabled = !languageSelect.value;
+    }
+  });
+
+  // Handle translation
+  translateBtn?.addEventListener('click', async () => {
+    if (!languageSelect.value) return;
+
+    const targetLang = languageSelect.value;
+    const subtitleData = JSON.parse(sessionStorage.getItem('subtitleData') || '{}');
+    const subtitles = subtitleData.subtitles || [];
+
+    if (subtitles.length === 0) {
+      if (showToast) {
+        showToast('No subtitles to translate', 'warn');
+      }
+      return;
+    }
+
+    try {
+      translateBtn.disabled = true;
+      translateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Translating...';
+
+      // Translate each subtitle
+      for (const subtitle of subtitles) {
+        const textArea = document.getElementById(`sub-trans-${subtitle.index}`) as HTMLTextAreaElement;
+        if (textArea && !textArea.value) {
+          try {
+            // Here you would integrate with a translation service
+            // For now, we'll just append "[Translated]" to show the concept
+            const translatedText = subtitle.text + " [Translated to " + targetLang + "]";
+            textArea.value = translatedText;
+          } catch (error) {
+            console.error('Translation error:', error);
+          }
+        }
+      }
+
+      if (showToast) {
+        showToast('Translation completed successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      if (showToast) {
+        showToast('Error during translation. Please try again.', 'error');
+      }
+    } finally {
+      translateBtn.disabled = false;
+      translateBtn.innerHTML = '<span class="d-flex align-items-center justify-content-center gap-2"><i class="bi bi-translate"></i><span>Translate</span></span>';
+    }
+  });
+
+  // Access the showToast function from the global scope
+  declare global {
+    interface Window {
+      showToast: (message: string, type: 'success' | 'error' | 'warn') => void;
+    }
+  }
+</script>

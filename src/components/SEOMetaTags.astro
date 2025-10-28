@@ -1,0 +1,84 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  keywords: string[];
+  canonicalUrl?: string;
+}
+
+const ROOT_URL = "https://subtitletranslatorai.com";
+
+const pathname = Astro.url.pathname === "/" ? "" : Astro.url.pathname.replace(/\/$/, "");
+const {
+  title = "Subtitle Translator - Free Online Subtitle Translation Tool",
+  description = "Free online subtitle translator. Translate SRT, SUB, SBV, ASS, VTT, STL subtitle files to any language. Easy to use, instant translation with editing capabilities.",
+  keywords = [
+    "subtitle translator",
+    "subtitle translator online",
+    "subtitle translator free",
+    "subtitle translator app",
+    "subtitle translator ai",
+    "subtitle translator youtube",
+    "subtitle translate",
+    "srt translator",
+    "vtt translator",
+    "subtitle translation",
+    "translate subtitles",
+    "subtitle converter",
+    "online subtitle translator",
+    "free subtitle translator",
+    "subtitle translation tool"
+  ],
+  canonicalUrl = Astro.props.canonicalUrl ?? `${ROOT_URL}${pathname}`
+} = Astro.props;
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title}>
+<meta name="description" content={description}>
+<meta name="keywords" content={keywords.join(", ")}>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content={canonicalUrl}>
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:image" content={`${ROOT_URL}/og-image.jpg`}>
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content={canonicalUrl}>
+<meta property="twitter:title" content={title}>
+<meta property="twitter:description" content={description}>
+<meta property="twitter:image" content={`${ROOT_URL}/og-image.jpg`}>
+
+<!-- Additional SEO -->
+<link rel="canonical" href={canonicalUrl}>
+<meta name="robots" content="index, follow">
+<meta name="language" content="English">
+
+<!-- Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Subtitle Translator",
+    "description": description,
+    "url": canonicalUrl,
+    "applicationCategory": "Multimedia",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "SRT file translation",
+      "SUB file translation",
+      "SBV file translation",
+      "ASS file translation",
+      "VTT file translation",
+      "STL file translation"
+    ]
+  })}>
+</script>

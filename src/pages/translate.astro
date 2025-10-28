@@ -1,0 +1,332 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import TranslationControls from '../components/TranslationControls.astro';
+import SubtitleTable from '../components/SubtitleTable.astro';
+import Footer from '../components/Footer.astro';
+import type { SubtitleCaption } from '../utils/subtitle';
+
+// Astro Head Content
+const googleTranslateStyles = `
+  /* Hide Google Translate attribution */
+  .goog-te-gadget {
+    font-family: 'Inter', sans-serif !important;
+    color: transparent !important;
+  }
+
+  .goog-te-gadget span {
+    display: none !important;
+  }
+
+  .goog-te-combo {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    background-color: var(--bs-tertiary-bg) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 1rem center !important;
+    background-size: 16px 12px !important;
+    border: 1px solid var(--bs-border-color) !important;
+    border-radius: 0.5rem !important;
+    appearance: none !important;
+  }
+
+  .goog-te-combo:hover {
+    border-color: var(--bs-primary) !important;
+  }
+
+  .goog-te-combo:focus {
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25) !important;
+    outline: 0 !important;
+  }
+
+  /* Dark mode adjustments */
+  [data-bs-theme="dark"] .goog-te-combo {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    color: var(--bs-body-color) !important;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .goog-te-combo {
+      padding: 0.75rem 1rem !important;
+      font-size: 1rem !important;
+    }
+  }
+
+  /* Hide top bar */
+  .goog-te-banner-frame {
+    display: none !important;
+  }
+  .goog-te-menu-value {
+    display: none !important;
+  }
+`;
+
+// Enable server-side rendering
+export const prerender = false;
+
+// Handle POST request data
+let subtitleData: SubtitleCaption[] = [];
+let filename = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const jsonData = formData.get('subtitleData');
+    if (jsonData) {
+      const parsed = JSON.parse(jsonData.toString());
+      if (Array.isArray(parsed?.data)) {
+        subtitleData = parsed.data.map((subtitle: any, index: number) => ({
+          ...subtitle,
+          index: index + 1 // Ensure indices start from 1
+        }));
+        filename = parsed.filename || 'subtitles.srt';
+      }
+    }
+  } catch (error) {
+    console.error('Error parsing subtitle data:', error);
+  }
+}
+
+// If no data, redirect to home
+if (subtitleData.length === 0) {
+  return Astro.redirect('/');
+}
+
+const pageTitle = "Translate Subtitles";
+const pageDescription = `Translate "${filename}" - Free online subtitle translator`;
+---
+
+<Layout title={pageTitle} noindex={true}>
+  <!-- Add Google Translate styles to head -->
+  <style set:html={googleTranslateStyles} slot="head" />
+
+  <!-- Add Google Translate scripts to head -->
+  <script is:inline slot="head">
+    function googleTranslateElementInit() {
+      const translateElement = new google.translate.TranslateElement({
+        pageLanguage: 'auto',
+        includedLanguages: 'en,es,fr,de,it,pt,ru,ja,ko,zh-CN',
+        layout: google.translate.TranslateElement.InlineLayout.SELECT,
+        autoDisplay: false,
+        gaTrack: false
+      }, 'google_translate_element');
+
+      // Add Bootstrap classes after initialization
+      const observer = new MutationObserver((mutations) => {
+        const select = document.querySelector('select.goog-te-combo');
+        if (select) {
+          select.classList.add('form-select');
+          select.classList.add('form-select-lg');
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+  </script>
+  <script is:inline slot="head" type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
+
+  <!-- Hidden container for translation -->
+  <div id="text-to-translate">
+    {subtitleData.map(subtitle => (
+      <p class="translate-p"
+         data-index={subtitle.index}
+         data-original={subtitle.content}>
+        {subtitle.content}
+      </p>
+    ))}
+  </div>
+
+  <Header title={pageTitle} />
+  
+  <main class="container my-4">
+    <div class="row mb-4 notranslate">
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/" class="text-decoration-none">
+                <i class="bi bi-house-door"></i> Home
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Translate: {filename}
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Replace TranslationControls with Google Translate -->
+    <section class="card shadow-sm mb-4">
+      <div class="card-body p-4 notranslate">
+        <h5 class="card-title">Translation Settings</h5>
+        
+        <!-- Google Translate Element -->
+        <div>
+          <label for="google_translate_element" class="form-label fw-medium">Select Language:</label>
+          <div id="google_translate_element"></div>
+        </div>
+
+        <div class="d-grid">
+          <button class="btn btn-primary btn-lg" id="apply-translation-btn">
+            <span class="d-flex align-items-center justify-content-center">
+              <i class="bi bi-check-circle me-1"></i>
+              <span class="button-text">Apply Translation</span>
+              <span class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div class="mt-3 p-4 pt-0">
+        <p class="text-muted small mb-0 notranslate">Language Example:</p>
+        <p class="mb-0">This is an example text translated in your language</p>
+      </div>
+    </section>
+    <SubtitleTable
+      subtitles={subtitleData}
+      filename={filename}
+    />
+  </main>
+
+  <div class="notranslate">
+    <Footer />
+  </div>
+</Layout>
+
+<script>
+  // Initialize variables at the top level
+  let subtitleData: { subtitles: any[]; filename: string } | null = null;
+
+  // Wait for DOM and Google Translate to be ready
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize subtitle data
+    const dataElement = document.getElementById('subtitle-data');
+    const subtitleDataString = dataElement?.getAttribute('data-subtitles');
+    const filenameString = dataElement?.getAttribute('data-filename');
+
+    if (subtitleDataString && filenameString) {
+      try {
+        const subtitles = JSON.parse(subtitleDataString);
+        subtitleData = {
+          subtitles: subtitles,
+          filename: filenameString
+        };
+        // Store in session storage for persistence
+        sessionStorage.setItem('subtitleData', JSON.stringify(subtitleData));
+      } catch (error) {
+        console.error('Error parsing subtitle data:', error);
+      }
+    }
+
+    // Check if Google Translate is loaded
+    const checkGoogleTranslate = setInterval(() => {
+      if (window.google && google.translate) {
+        clearInterval(checkGoogleTranslate);
+        setupTranslationHandling();
+      }
+    }, 100);
+  });
+
+  function setupTranslationHandling() {
+    const applyTranslationBtn = document.getElementById('apply-translation-btn');
+    const textContainer = document.getElementById('text-to-translate');
+
+    applyTranslationBtn?.addEventListener('click', async () => {
+      // Update button state
+      const spinner = applyTranslationBtn.querySelector('.spinner-border');
+      const buttonText = applyTranslationBtn.querySelector('.button-text');
+      
+      applyTranslationBtn.disabled = true;
+      spinner?.classList.remove('d-none');
+      if (buttonText) buttonText.textContent = 'Translating...';
+      
+      try {
+        const textElement = document.getElementById('text-to-translate');
+        const height = textElement.scrollHeight;
+        const time = height / 10;
+
+        textElement.scrollTo({
+          top: height,
+          behavior: 'smooth'
+        });
+
+        textElement.addEventListener('scrollend', () => {
+          textElement.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }, { once: true });
+
+        // Wait for translations to complete
+        await new Promise((resolve) => {
+          const checkTranslation = setInterval(() => {
+            const paragraphs = textContainer?.getElementsByClassName('translate-p');
+            if (!paragraphs) return;
+            
+            // Check if any paragraph still has original text
+            const allTranslated = Array.from(paragraphs).every(p => {
+              const originalText = p.getAttribute('data-original');
+              return p.textContent?.trim() !== originalText;
+            });
+            
+            if (allTranslated) {
+              clearInterval(checkTranslation);
+              resolve(true);
+            }
+          }, time*2);
+          
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkTranslation);
+            resolve(false);
+          }, 10000);
+        });
+
+        // Get all translated paragraphs
+        const translatedParagraphs = textContainer?.getElementsByClassName('translate-p');
+        if (!translatedParagraphs) return;
+
+        // Copy translated text to textarea fields
+        Array.from(translatedParagraphs).forEach(p => {
+          const index = p.getAttribute('data-index');
+          const translatedText = p.textContent?.trim();
+          if (index && translatedText) {
+            const textarea = document.getElementById(`sub-trans-${index}`);
+            if (textarea instanceof HTMLTextAreaElement) {
+              textarea.value = translatedText;
+            }
+          }
+        });
+
+        // Show success message
+        if (showToast) {
+          showToast('Translations applied successfully!', 'success');
+        }
+      } catch (error) {
+        console.error('Translation error:', error);
+        if (showToast) {
+          showToast('Error applying translations. Please try again.', 'error');
+        }
+      } finally {
+        // Reset button state
+        applyTranslationBtn.disabled = false;
+        spinner?.classList.add('d-none');
+        if (buttonText) buttonText.textContent = 'Apply Translation';
+      }
+    });
+  }
+</script>

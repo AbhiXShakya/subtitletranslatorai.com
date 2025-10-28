@@ -1,0 +1,126 @@
+---
+interface Props {
+  title: string;
+  content: string;
+  id?: string;
+  isLargeSection?: boolean;
+}
+
+const { title, content, id, isLargeSection = false } = Astro.props;
+---
+
+<section class={`content-section ${isLargeSection ? 'py-5' : 'py-4'}`} id={id}>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-sm d-none d-md-block">
+          <div class="card-body p-4 p-lg-5">
+            <h2 class="card-title h3 mb-4">{title}</h2>
+            <div class="card-text" set:html={content} />
+          </div>
+        </div>
+        <div class="d-block d-md-none px-0">
+          <h2 class="card-title h3 mb-4">{title}</h2>
+          <div class="card-text" set:html={content} />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .content-section {
+    background: var(--bs-tertiary-bg);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .content-section:nth-child(even) {
+    background: var(--bs-body-bg);
+  }
+
+  .card {
+    border: none;
+    border-radius: 1.5rem;
+    background: var(--bs-body-bg);
+    overflow: hidden;
+  }
+
+  .card-body {
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    border-radius: 1.5rem;
+    background: transparent;
+  }
+
+  .card-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--bs-emphasis-color);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 8px rgba(31,38,135,0.04);
+    line-height: 1.2;
+  }
+
+  .card-text {
+    font-size: 1.08rem;
+    color: var(--bs-body-color);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+
+  :global(.content-section p) {
+    color: var(--bs-secondary-color, var(--bs-body-color));
+    line-height: 1.7;
+    margin-bottom: 1.1rem;
+    font-size: 1.08rem;
+  }
+
+  :global(.content-section strong) {
+    color: var(--bs-emphasis-color);
+    font-weight: 700;
+  }
+
+  :global(.content-section ul) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.1rem;
+  }
+
+  :global(.content-section li) {
+    color: var(--bs-secondary-color, var(--bs-body-color));
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  :global(.content-section h3) {
+    color: var(--bs-emphasis-color);
+    font-size: 1.3rem;
+    margin-top: 2.2rem;
+    margin-bottom: 1.1rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 992px) {
+    .card-body {
+      padding: 2rem 1.2rem 1.5rem 1.2rem !important;
+    }
+    .card-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .card {
+      background: var(--bs-body-bg);
+      box-shadow: none;
+      backdrop-filter: none;
+      border-radius: 0.75rem;
+    }
+    .card-body {
+      padding: 1.2rem 0.7rem 1rem 0.7rem !important;
+    }
+    .card-title {
+      font-size: 1.15rem;
+    }
+  }
+</style>

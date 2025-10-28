@@ -1,0 +1,186 @@
+---
+interface Props {
+  acceptedFormats?: string[];
+}
+
+const {
+  acceptedFormats = ['.srt', '.vtt', '.sub', '.sbv', '.lrc', '.smi', '.ssa', '.ass', '.json']
+} = Astro.props;
+---
+
+<div class="upload-container card shadow-sm p-4 text-center">
+  <div 
+    id="drop-zone" 
+    class="drop-zone p-5 mb-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+  >
+    <i class="bi bi-cloud-upload fs-1 mb-3 text-primary"></i>
+    <h3 class="fs-5 mb-3">Drag & Drop here or click to upload</h3>
+    <p class="text-muted mb-3">
+      Supported formats: {acceptedFormats.join(', ')}
+    </p>
+    <input 
+      type="file" 
+      id="file-input" 
+      class="d-none" 
+      accept={acceptedFormats.join(',')}
+    >
+    <button class="btn btn-primary btn-lg" id="upload-btn" type="button">
+      <span id="upload-btn-content">
+        Choose File
+      </span>
+    </button>
+  </div>
+  <p class="text-muted small mt-2 mb-0">
+      <i class="bi bi-info-circle me-1"></i>
+      We do not keep your files. They are instantly deleted from our server after processing.
+  </p>
+</div>
+
+<style>
+  .drop-zone {
+    border: 2px dashed var(--bs-border-color);
+    transition: all 0.3s ease;
+    background-color: var(--bs-tertiary-bg);
+    cursor: pointer;
+  }
+
+  .drop-zone:hover,
+  .drop-zone.dragover {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+  }
+
+  .drop-zone .bi {
+    transition: transform 0.3s ease;
+  }
+
+  .drop-zone:hover .bi,
+  .drop-zone.dragover .bi {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 576px) {
+    .drop-zone {
+      padding: 2rem !important;
+    }
+  }
+</style>
+
+<script>
+  let uploading = false;
+  let fileSelected = false;
+
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const uploadBtn = document.getElementById('upload-btn');
+  const uploadBtnContent = document.getElementById('upload-btn-content');
+
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone?.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // Handle drag-n-drop visual feedback
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone?.addEventListener(eventName, highlight, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone?.addEventListener(eventName, unhighlight, false);
+  });
+
+  function highlight() {
+    dropZone?.classList.add('dragover');
+  }
+
+  function unhighlight() {
+    dropZone?.classList.remove('dragover');
+  }
+
+  // Handle file selection
+  dropZone?.addEventListener('click', () => {
+    fileInput?.click();
+  });
+
+  fileInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e);
+    }
+  });
+
+  dropZone?.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    if (dt?.files && dt.files.length > 0) {
+      handleFiles({ target: { files: dt.files } });
+    }
+  });
+
+  function updateButton() {
+    if (uploadBtn) {
+      uploadBtn.disabled = uploading;
+      if (uploading) {
+        uploadBtnContent.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading...';
+      } else {
+        uploadBtnContent.textContent = 'Choose File';
+      }
+    }
+  }
+
+  async function handleFiles(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const acceptedFormats = ['.srt', '.vtt', '.sub', '.sbv', '.lrc', '.smi', '.ssa', '.ass', '.json'];
+    const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+    if (!acceptedFormats.includes(fileExt)) {
+      showToast('Please upload a valid subtitle file', 'error');
+      updateButton();
+      return;
+    }
+
+    uploading = true;
+    updateButton();
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      
+      // Redirect to translate page with the data
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/translate';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'subtitleData';
+      input.value = JSON.stringify(data);
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+
+    } catch (error) {
+      showToast('Error uploading file. Please try again.', 'error');
+      console.error('Upload error:', error);
+    }
+  }
+
+  // Initial button state
+  updateButton();
+</script>

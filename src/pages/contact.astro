@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContentSection from '../components/ContentSection.astro';
+import SEOMetaTags from '../components/SEOMetaTags.astro';
+
+const title = "Contact - Subtitle Translator";
+const description = "Get in touch with us for any questions or support regarding our subtitle translation service. We're here to help you with your subtitle translation needs.";
+const keywords = [
+  "contact subtitle translator",
+  "subtitle translation support",
+  "subtitle tool help",
+  "contact us",
+  "subtitle translation contact"
+];
+---
+
+<Layout title={title}>
+  <SEOMetaTags
+    title={title}
+    description={description}
+    keywords={keywords}
+  />
+
+  <Header />
+  
+  <main>
+    <ContentSection
+      title="Contact Us"
+      content={`
+        <p>Have questions or need assistance? We're here to help! Fill out the form below or use our alternative contact methods.</p>
+      `}
+      isLargeSection={true}
+    />
+
+    <ContentSection
+      title="Contact Methods"
+      content={`
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h3 class="h5 mb-3">Email Support</h3>
+            <p>For general inquiries and support:</p>
+            <p><strong>support@subtitletranslatorai.com</strong></p>
+          </div>
+          <div class="col-md-6">
+            <h3 class="h5 mb-3">Response Time</h3>
+            <p>We typically respond within 24-48 hours during business days.</p>
+          </div>
+        </div>
+      `}
+    />
+  </main>
+
+  <Footer />
+
+  <script>
+    // Form validation
+    const form = document.querySelector('#contactForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          e.stopPropagation();
+        } else {
+          // Handle form submission
+          const formData = new FormData(form);
+          // Add your form submission logic here
+          alert('Thank you for your message. We will get back to you soon!');
+          form.reset();
+        }
+        form.classList.add('was-validated');
+      });
+    }
+  </script>
+</Layout>
+
+<style>
+  .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+</style>
