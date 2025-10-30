@@ -58,6 +58,14 @@ import { initToasts } from '../utils/toast';
       const theme = savedTheme || (prefersDark ? 'dark' : 'light');
       document.documentElement.setAttribute('data-bs-theme', theme);
     </script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-BT2DNQ6JDX"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BT2DNQ6JDX');
+    </script>
   </head>
 
   <body class="bg-body-secondary">
