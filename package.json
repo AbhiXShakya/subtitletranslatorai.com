@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
+    "@google/genai": "^1.28.0",
     "astro": "^5.15.1",
     "subsrt-ts": "^2.1.2"
   },

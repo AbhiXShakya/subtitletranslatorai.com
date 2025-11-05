@@ -174,7 +174,7 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
       <div class="card-body p-4 notranslate" style="padding-bottom: 0px !important;">
         <h5 class="card-title">Translation Settings</h5>
         
-        {/* Use Bootstrap row for layout 
+        {/* Use Bootstrap row for layout
             ADD/CONFIRM align-items-end HERE */}
         <div class="row g-3 align-items-end" style="max-width: 500px;">
           
@@ -200,8 +200,93 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
           </div>
 
         </div>
+
+        {/* AI Optimize Section - Header with Buttons */}
+        <div class="mt-4 pt-3 border-top">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
+            <button
+              class="btn btn-link text-decoration-none p-0 text-start flex-grow-1"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#aiOptimizeCollapse"
+              aria-expanded="false"
+              aria-controls="aiOptimizeCollapse"
+              id="ai-collapse-toggle"
+            >
+              <h5 class="mb-0 text-body d-flex align-items-center">
+                <i class="bi bi-stars text-warning me-2" style="font-size: 1.25rem;"></i>
+                <span class="fw-semibold">AI Optimization</span>
+                <span class="badge bg-primary ms-2">BETA</span>
+                <i class="bi bi-chevron-down text-muted ms-2" id="ai-collapse-icon"></i>
+              </h5>
+            </button>
+            
+            <div class="d-flex gap-2">
+              {/* Update API Key Button - Shows only if key exists */}
+              <button
+                class="btn btn-outline-secondary d-none"
+                type="button"
+                id="update-api-key-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#apiKeyModal"
+              >
+                <i class="bi bi-key me-2"></i>
+                Update Key
+              </button>
+              
+              {/* AI Optimize Button */}
+              <button
+                class="btn btn-success"
+                type="button"
+                id="ai-optimize-btn"
+              >
+                <span class="d-flex align-items-center">
+                  <i class="bi bi-stars me-2"></i>
+                  <span id="ai-optimize-btn-text">AI Optimize</span>
+                  <span class="spinner-border spinner-border-sm ms-2 d-none" id="ai-optimize-spinner" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Description Text */}
+          <p class="text-muted small mb-3 mt-3">
+            <i class="bi bi-magic me-1"></i>
+            Enhance your translated subtitles with AI-powered grammar fixes and clarity improvements
+          </p>
+          
+          {/* Collapsible Features Section */}
+          <div class="collapse" id="aiOptimizeCollapse">
+            <div class="p-3 rounded border">
+              <p class="text-muted mb-3 fw-semibold">
+                <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                Features:
+              </p>
+              <ul class="list-unstyled mb-0">
+                <li class="mb-3">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <strong>Context-aware analysis</strong> - AI reads all subtitles first for better understanding
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <strong>Multi-language support</strong> - Works with any language, no translation
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <strong>Grammar & clarity improvements</strong> - Fixes errors while maintaining meaning
+                </li>
+                <li class="mb-0">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <strong>Privacy-first</strong> - API key stored locally in your browser only
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="mt-3 p-4 pt-0">
+      <div class="mt-4 p-4 pt-0">
         <p class="text-muted small mb-0 notranslate">Language Example:</p>
         <p class="mb-0">This is an example text translated in your language</p>
       </div>
@@ -211,6 +296,123 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
       filename={filename}
     />
   </main>
+  {/* API Key Modal */}
+  <div class="modal fade" id="apiKeyModal" tabindex="-1" aria-labelledby="apiKeyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="apiKeyModalLabel">
+            <i class="bi bi-key-fill me-2"></i>
+            Configure Gemini API Key
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {/* API Key Input */}
+          <div class="mb-4">
+            <label for="modal-api-key-input" class="form-label fw-semibold">
+              <i class="bi bi-key me-2"></i>
+              Your Gemini API Key
+            </label>
+            <div class="input-group input-group-lg">
+              <input 
+                type="password" 
+                class="form-control" 
+                id="modal-api-key-input" 
+                placeholder="Paste your API key here..."
+                aria-label="Gemini API key"
+              />
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button" 
+                id="modal-toggle-visibility"
+                title="Show/Hide API key"
+              >
+                <i class="bi bi-eye" id="modal-eye-icon"></i>
+              </button>
+            </div>
+            <div class="form-text">
+              <i class="bi bi-shield-lock-fill text-success me-1"></i>
+              Your API key is stored only in your browser's local storage and never sent to our servers.
+            </div>
+          </div>
+
+          {/* Tutorial Steps */}
+          <div class="alert alert-info">
+            <h6 class="alert-heading">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              How to Get Your Free Gemini API Key
+            </h6>
+            <p class="mb-2">Follow these simple steps:</p>
+            <ol class="mb-0 ps-3">
+              <li class="mb-2">
+                <strong>Visit:</strong> 
+                <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener noreferrer" class="alert-link ms-1">
+                  Google AI Studio
+                  <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 0.75rem;"></i>
+                </a>
+              </li>
+              <li class="mb-2">
+                <strong>Create API Key:</strong> Click on "Create API Key" button at the top right
+              </li>
+              <li class="mb-2">
+                <strong>Name & Project:</strong> Give your key a name and select or create a project
+              </li>
+              <li class="mb-2">
+                <strong>Generate:</strong> Click "Create API key" button
+              </li>
+              <li class="mb-0">
+                <strong>Copy:</strong> Click the copy button to copy your new API key, then paste it above
+              </li>
+            </ol>
+          </div>
+
+          {/* Features Reminder */}
+          <div class="card border-0">
+            <div class="card-body py-2">
+              <small class="text-muted d-block mb-1 fw-semibold">
+                What you'll get:
+              </small>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <small>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Context-aware optimization
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <small>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Multi-language support
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <small>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Grammar & clarity fixes
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <small>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Complete privacy
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="save-api-key-btn">
+            <i class="bi bi-save me-2"></i>
+            Save API Key
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <div class="notranslate">
     <Footer />
@@ -339,4 +541,251 @@ const pageDescription = `Translate "${filename}" - Free online subtitle translat
       }
     });
   }
+
+  // AI Optimization functionality - Initialize after page loads
+  (function initAIOptimization() {
+    const aiOptimizeBtn = document.getElementById('ai-optimize-btn') as HTMLButtonElement;
+    const aiOptimizeBtnText = document.getElementById('ai-optimize-btn-text');
+    const aiOptimizeSpinner = document.getElementById('ai-optimize-spinner');
+    const updateApiKeyBtn = document.getElementById('update-api-key-btn') as HTMLButtonElement;
+    const collapseElement = document.getElementById('aiOptimizeCollapse');
+    const collapseIcon = document.getElementById('ai-collapse-icon');
+    
+    // Modal elements
+    const apiKeyModal = document.getElementById('apiKeyModal');
+    const modalApiKeyInput = document.getElementById('modal-api-key-input') as HTMLInputElement;
+    const modalToggleVisibility = document.getElementById('modal-toggle-visibility');
+    const modalEyeIcon = document.getElementById('modal-eye-icon');
+    const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+
+    // LocalStorage key
+    const API_KEY_STORAGE = 'gemini_api_key';
+
+    // Check if API key exists and show/hide Update Key button
+    function updateUIBasedOnAPIKey() {
+      const savedApiKey = localStorage.getItem(API_KEY_STORAGE);
+      if (savedApiKey && updateApiKeyBtn) {
+        updateApiKeyBtn.classList.remove('d-none');
+      } else if (updateApiKeyBtn) {
+        updateApiKeyBtn.classList.add('d-none');
+      }
+    }
+
+    // Initialize on page load
+    updateUIBasedOnAPIKey();
+
+    // Load API key into modal when opened
+    if (apiKeyModal) {
+      apiKeyModal.addEventListener('show.bs.modal', () => {
+        const savedApiKey = localStorage.getItem(API_KEY_STORAGE);
+        if (savedApiKey && modalApiKeyInput) {
+          modalApiKeyInput.value = savedApiKey;
+        }
+      });
+    }
+
+    // Toggle API key visibility in modal
+    modalToggleVisibility?.addEventListener('click', () => {
+      if (modalApiKeyInput) {
+        const isPassword = modalApiKeyInput.type === 'password';
+        modalApiKeyInput.type = isPassword ? 'text' : 'password';
+        if (modalEyeIcon) {
+          modalEyeIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+      }
+    });
+
+    // Save API key from modal
+    saveApiKeyBtn?.addEventListener('click', () => {
+      const apiKey = modalApiKeyInput?.value.trim();
+      if (apiKey && apiKey.length > 0) {
+        localStorage.setItem(API_KEY_STORAGE, apiKey);
+        updateUIBasedOnAPIKey();
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(apiKeyModal!);
+        modal?.hide();
+        
+        if (showToast) {
+          showToast('API key saved successfully!', 'success');
+        }
+      } else {
+        if (showToast) {
+          showToast('Please enter a valid API key', 'error');
+        }
+      }
+    });
+
+    // Update collapse icon on toggle
+    collapseElement?.addEventListener('show.bs.collapse', () => {
+      if (collapseIcon) collapseIcon.className = 'bi bi-chevron-up text-muted ms-2';
+    });
+
+    collapseElement?.addEventListener('hide.bs.collapse', () => {
+      if (collapseIcon) collapseIcon.className = 'bi bi-chevron-down text-muted ms-2';
+    });
+
+    // AI Optimize button click handler
+    aiOptimizeBtn?.addEventListener('click', async () => {
+      // Check if API key exists
+      const apiKey = localStorage.getItem(API_KEY_STORAGE);
+      
+      if (!apiKey) {
+        // Show modal to enter API key
+        const modal = new bootstrap.Modal(apiKeyModal!);
+        modal.show();
+        return;
+      }
+
+      // Check if there are subtitles to optimize
+      const firstTextarea = document.getElementById('sub-trans-1') as HTMLTextAreaElement;
+      if (!firstTextarea || firstTextarea.value.trim() === '') {
+        if (showToast) {
+          showToast('Please add or translate subtitles before optimizing', 'error');
+        }
+        return;
+      }
+
+      // Disable button and show loading state
+      aiOptimizeBtn.disabled = true;
+      aiOptimizeSpinner?.classList.remove('d-none');
+      if (aiOptimizeBtnText) aiOptimizeBtnText.textContent = 'Optimizing...';
+      
+      // Hide Update API Key button during optimization
+      if (updateApiKeyBtn) {
+        updateApiKeyBtn.classList.add('d-none');
+      }
+
+      try {
+        // Collect all translated subtitles
+        const subtitles: { index: number; content: string }[] = [];
+        const rows = document.querySelectorAll('tr[data-index]');
+        
+        rows.forEach(row => {
+          const index = parseInt(row.getAttribute('data-index') || '0');
+          const textarea = document.getElementById(`sub-trans-${index}`) as HTMLTextAreaElement;
+          if (textarea && textarea.value.trim()) {
+            subtitles.push({
+              index,
+              content: textarea.value.trim()
+            });
+          }
+        });
+
+        if (subtitles.length === 0) {
+          throw new Error('No subtitles to optimize');
+        }
+
+        // Client-side batching to avoid Cloudflare timeout
+        const BATCH_SIZE = 50; // Max 50 subtitles per request
+        const totalBatches = Math.ceil(subtitles.length / BATCH_SIZE);
+        
+        // Show initial toast
+        if (showToast) {
+          showToast(
+            totalBatches > 1
+              ? `Starting AI optimization (${totalBatches} batches)...`
+              : 'Starting AI optimization...',
+            'info'
+          );
+        }
+
+        let updatedCount = 0;
+        const allOptimized: { index: number; content: string }[] = [];
+
+        // Process each batch sequentially
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * BATCH_SIZE;
+          const end = Math.min(start + BATCH_SIZE, subtitles.length);
+          const batch = subtitles.slice(start, end);
+
+          // Update progress
+          if (totalBatches > 1) {
+            if (aiOptimizeBtnText) {
+              aiOptimizeBtnText.textContent = `Optimizing (${i + 1}/${totalBatches})...`;
+            }
+          }
+
+          // Call the API endpoint for this batch
+          const response = await fetch('/api/aioptimize', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              apiKey,
+              subtitles: batch,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || `Failed to optimize batch ${i + 1}`);
+          }
+
+          if (!result.success || !result.optimized) {
+            throw new Error(result.error || `Optimization failed for batch ${i + 1}`);
+          }
+
+          // Collect optimized results
+          allOptimized.push(...result.optimized);
+
+          // Show progress toast for multi-batch operations
+          if (totalBatches > 1 && showToast) {
+            showToast(
+              `Batch ${i + 1}/${totalBatches} completed (${result.optimized.length} subtitles)`,
+              'info'
+            );
+          }
+
+          // Small delay between batches to avoid rate limiting
+          if (i < totalBatches - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+
+        // Update textareas with all optimized content
+        allOptimized.forEach((item: { index: number; content: string }) => {
+          const textarea = document.getElementById(`sub-trans-${item.index}`) as HTMLTextAreaElement;
+          if (textarea) {
+            textarea.value = item.content;
+            updatedCount++;
+          }
+        });
+
+        // Show success message
+        const batchInfo = totalBatches > 1 ? ` in ${totalBatches} batches` : '';
+        if (showToast) {
+          showToast(
+            `Successfully optimized ${updatedCount} subtitle${updatedCount !== 1 ? 's' : ''}${batchInfo}!`,
+            'success'
+          );
+        }
+
+      } catch (error) {
+        console.error('AI optimization error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to optimize subtitles';
+        
+        if (showToast) {
+          showToast(errorMessage, 'error');
+        }
+
+        // Check for API key errors
+        if (errorMessage.toLowerCase().includes('api key') || 
+            errorMessage.toLowerCase().includes('authentication')) {
+          // Optionally clear invalid API key
+          localStorage.removeItem(API_KEY_STORAGE);
+        }
+      } finally {
+        // Re-enable button and hide loading state
+        aiOptimizeBtn.disabled = false;
+        aiOptimizeSpinner?.classList.add('d-none');
+        if (aiOptimizeBtnText) aiOptimizeBtnText.textContent = 'AI Optimize';
+        
+        // Show Update API Key button again
+        updateUIBasedOnAPIKey();
+      }
+    });
+  })();
 </script>
